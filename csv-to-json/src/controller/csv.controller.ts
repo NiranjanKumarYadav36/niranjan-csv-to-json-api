@@ -1,7 +1,6 @@
 import { Request, Response } from "express";
-import { queryDB } from "../config/db";
 import { CSVParser } from "../services/csvParser";
-import { User, ProcessCSVResponse, APIResponse } from "../types";
+import { User, ProcessCSVResponse, APIResponse, UserResponse } from "../types";
 import { UserService } from "../services/userService";
 import { AgeDistributionService } from "../services/ageDistribution";
 
@@ -34,7 +33,6 @@ export const processCSV = async (req: Request, res: Response): Promise<void> => 
 
       const fullName = `${firstName} ${lastName}`.trim();
 
-      const addressFields = ['line1', 'line2', 'city', 'state'];
       const address: any = {};
 
       if (record.address) {
@@ -95,10 +93,40 @@ export const getUsers = async (req: Request, res: Response): Promise<void> => {
   try {
     const users = await userService.getAllUsers();
 
-    const response: APIResponse<User[]> = {
+    const trasformedUsers: UserResponse[] = users.map((user) => {
+      const address = user.address ? JSON.parse(JSON.stringify(user.address)) : undefined;
+      const additional_info = user.additional_info ? JSON.parse(JSON.stringify(user.additional_info)) : {};
+
+      const nameParts = user.name.split(' ');
+      const firstName = nameParts[0] || '';
+      const lastName = nameParts.slice(1).join(' ') || '';
+
+      const response: UserResponse = {
+        id: user.id,
+        name: {
+          firstName: firstName,
+          lastName: lastName
+        },
+        age: user.age
+      };
+
+      // Add address if it exists
+      if (address && Object.keys(address).length > 0) {
+        response.address = address;
+      }
+
+      // Add all additional fields
+      Object.keys(additional_info).forEach(key => {
+        response[key] = additional_info[key];
+      });
+
+      return response;
+    });
+
+    const response: APIResponse<UserResponse[]> = {
       success: true,
-      data: users,
-      count: users.length,
+      data: trasformedUsers,
+      count: trasformedUsers.length
     };
 
     res.json(response);

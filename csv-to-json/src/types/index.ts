@@ -41,3 +41,19 @@ export interface APIResponse<T> {
   error?: string;
   count?: number;
 }
+
+export interface UserResponse {
+  id?: number;
+  name: {
+    firstName: string;
+    lastName: string;
+  };
+  age: number;
+  address?: {
+    line1?: string;
+    line2?: string;
+    city?: string;
+    state?: string;
+  };
+  [key: string]: any;
+}
