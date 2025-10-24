@@ -27,26 +27,46 @@ export const processCSV = async (req: Request, res: Response): Promise<void> => 
 
     // 2. Transform data for database
     const users: User[] = records.map((record) => {
-      const { name, age, address, ...rest } = record;
-      const fullName = `${name?.firstName || ""} ${name?.lastName || ""}`.trim();
 
-      const additionalInfo: any = { ...rest };
+      const firstName = record.name?.firstName || '';
+      const lastName = record.name?.lastName || '';
+      const age = record.age;
+
+      const fullName = `${firstName} ${lastName}`.trim();
+
+      const addressFields = ['line1', 'line2', 'city', 'state'];
+      const address: any = {};
+
+      if (record.address) {
+        for (const [key, value] of Object.entries(record.address)) {
+          if (value) address[key] = value;
+        }
+      }
+
+      const additionalInfo: any = { ...record };
+
       delete additionalInfo.name;
       delete additionalInfo.age;
       delete additionalInfo.address;
+
+      Object.keys(additionalInfo).forEach(key => {
+        if (additionalInfo[key] === null || additionalInfo[key] === undefined || additionalInfo[key] === '') {
+          delete additionalInfo[key];
+        }
+      });
 
       return {
         name: fullName,
         age,
         address: address || null,
-        additional_info:
-          Object.keys(additionalInfo).length > 0 ? additionalInfo : null,
+        additional_info: Object.keys(additionalInfo).length > 0 ? additionalInfo : null,
       };
     });
 
     // 3. Database operations
     await userService.createTable();
     await userService.insertUsers(users);
+
 
     // 4. Calculate age distribution
     const allUsers = await userService.getAllUsers();
