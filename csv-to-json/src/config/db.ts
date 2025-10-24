@@ -7,7 +7,7 @@ const connectionString = process.env.DATABASE_URL as string;
 
 if (!connectionString) {
     console.error("DATABASE_URL is not set in .env file!");
-    process.exit(1);
+    process.exit(1)
 }
 
 let client: Client | null = null;
