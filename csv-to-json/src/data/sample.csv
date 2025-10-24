@@ -1,0 +1,9 @@
+name.firstName,name.lastName,age,address.line1,address.line2,address.city,address.state,gender
+John,Doe,25,123 Main St,Apt 4B,New York,NY,male
+Jane,Smith,32,456 Oak Ave,,Chicago,IL,female
+Bob,Johnson,45,789 Pine Rd,Suite 100,Los Angeles,CA,male
+Alice,Brown,18,321 Elm St,,Miami,FL,female
+Mike,Wilson,65,654 Birch Ln,Apt 2B,Seattle,WA,male
+Sarah,Davis,29,987 Maple Dr,,Boston,MA,female
+Tom,Anderson,55,147 Cedar St,Unit 5,Denver,CO,male
+Emily,Clark,22,258 Spruce Ave,,Austin,TX,female
